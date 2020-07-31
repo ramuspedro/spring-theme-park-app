@@ -11,14 +11,6 @@ pipeline {
                 sh 'mvn clean test'
             }
         }
-        stage('Reports') {
-            steps {
-                dir(path: '.') {
-                    publishHTML([allowMissing: true, alwaysLinkToLastBuild: false, keepAll: true, reportDir: 'target/site/jacoco/', reportFiles: 'index.html', reportName: 'Code Coverage', reportTitles: 'Code Coverage'])
-                    step([$class: 'JUnitResultArchiver', testResults: 'target/surefire-reports/TEST-*.xml'])
-                }
-            }
-        }
         stage('Build') {
             agent {
                 docker { image 'maven:3.6.3-jdk-11' }
