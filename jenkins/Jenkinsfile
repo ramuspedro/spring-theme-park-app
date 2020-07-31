@@ -3,6 +3,11 @@
 pipeline {
     agent none
     stages {
+        stage('Tests') {
+            steps {
+                sh "mvn test"
+            }
+        }
         stage('Build') {
             agent {
                 docker { image 'maven:3.6.3-jdk-11' }
