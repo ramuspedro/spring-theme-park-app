@@ -1,7 +1,11 @@
 #!/usr/bin/env groovy
 
 pipeline {
-    agent any
+    agent none
+    tools {
+        maven 'Maven 3.6.3'
+        jdk 'jdk11'
+    }
     stages {
         stage('Tests') {
             steps {
