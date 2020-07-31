@@ -8,7 +8,15 @@ pipeline {
                 docker { image 'maven:3.6.3-jdk-11' }
             }
             steps {
-                sh 'mvn -Dmaven.test.failure.ignore=true install'
+                sh 'mvn clean test'
+            }
+        }
+        stage('Reports') {
+            steps {
+                dir(path: '.') {
+                    publishHTML([allowMissing: true, alwaysLinkToLastBuild: false, keepAll: true, reportDir: 'target/site/jacoco/', reportFiles: 'index.html', reportName: 'Code Coverage', reportTitles: 'Code Coverage'])
+                    step([$class: 'JUnitResultArchiver', testResults: 'target/surefire-reports/TEST-*.xml'])
+                }
             }
         }
         stage('Build') {
