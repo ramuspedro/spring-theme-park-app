@@ -1,6 +1,11 @@
 #!/usr/bin/env groovy
 
 pipeline {
+    environment {
+        registry = "ramuspedro/spring-theme-park"
+        registryCredential = 'dockerhub'
+        dockerImage = ''
+    }
     agent none
     stages {
         stage('Unit Tests') {
@@ -17,6 +22,27 @@ pipeline {
             }
             steps {
                 sh "mvn package -Dmaven.test.skip=true"
+            }
+        }
+        stage('Building image') {
+            steps{
+                script {
+                    dockerImage = docker.build registry + ":$BUILD_NUMBER"
+                }
+            }
+        }
+        stage('Deploy Image') {
+            steps{
+                script {
+                    docker.withRegistry( '', registryCredential ) {
+                        dockerImage.push()
+                    }
+                }
+            }
+        }
+        stage('Remove Unused docker image') {
+            steps{
+                sh "docker rmi $registry:$BUILD_NUMBER"
             }
         }
     }
